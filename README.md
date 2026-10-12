@@ -39,7 +39,7 @@ npm run build
 
 ## Публикация через GitHub Pages
 
-Сайт: [dzhamalovdev.github.io/opt](https://dzhamalovdev.github.io/opt/).
+Адрес после успешной публикации: [dzhamalovdev.github.io/opt](https://dzhamalovdev.github.io/opt/).
 
 1. В репозитории откройте **Settings → Pages** и выберите **GitHub Actions** в поле **Build and deployment → Source**.
 2. После каждого push в `main` workflow `.github/workflows/pages.yml` проверяет код, собирает статические файлы и публикует их. За первым запуском следите во вкладке **Actions**.
