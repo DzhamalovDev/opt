@@ -220,7 +220,14 @@ export default function NotesApp() {
     [synchronize],
   );
 
-  useEffect(() => () => window.clearTimeout(syncTimer.current), []);
+  useEffect(
+    () => () => {
+      window.clearTimeout(syncTimer.current);
+      const account = userRef.current;
+      if (account) void synchronize(account);
+    },
+    [synchronize],
+  );
 
   const visible = useMemo(
     () =>
