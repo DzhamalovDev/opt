@@ -161,6 +161,7 @@ export default function TrackerApp() {
   const syncTimer = useRef<number | undefined>(undefined);
   const [selectedWeek, setSelectedWeek] = useState<number | null>(null);
   const [showNotes, setShowNotes] = useState(false);
+  const [accountRequest, setAccountRequest] = useState(0);
   const [section, setSection] = useState<Section>("plan");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const fileInput = useRef<HTMLInputElement>(null);
@@ -380,7 +381,8 @@ export default function TrackerApp() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
-  function openNotes() {
+  function openNotes(showAccount = false) {
+    if (showAccount) setAccountRequest((request) => request + 1);
     setShowNotes(true);
     setSidebarOpen(false);
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -466,7 +468,7 @@ export default function TrackerApp() {
           <button
             type="button"
             className={`nav-link ${showNotes ? "active" : ""}`}
-            onClick={openNotes}
+            onClick={() => openNotes()}
           >
             <NotebookPen size={18} />
             <span>Мои заметки</span>
@@ -508,7 +510,7 @@ export default function TrackerApp() {
         <button
           type="button"
           className={`sidebar-bottom ${syncState === "error" ? "sync-error" : ""}`}
-          onClick={openNotes}
+          onClick={() => openNotes(true)}
           title={user?.email ?? "Открыть вход в аккаунт"}
         >
           <span className="sidebar-dot" />
@@ -604,7 +606,7 @@ export default function TrackerApp() {
             </div>
           )}
           {showNotes ? (
-            <NotesApp user={user} />
+            <NotesApp user={user} accountRequest={accountRequest} />
           ) : !ready ? (
             <div className="loading">Загружаем трекер…</div>
           ) : selectedWeek === null ? (

@@ -77,7 +77,13 @@ function formatDate(value: string) {
   );
 }
 
-export default function NotesApp({ user }: { user: User | null }) {
+export default function NotesApp({
+  user,
+  accountRequest = 0,
+}: {
+  user: User | null;
+  accountRequest?: number;
+}) {
   const [notes, setNotes] = useState<Note[]>([]);
   const notesRef = useRef<Note[]>([]);
   const userRef = useRef<User | null>(null);
@@ -95,6 +101,10 @@ export default function NotesApp({ user }: { user: User | null }) {
   const syncBusy = useRef(false);
   const syncAgain = useRef(false);
   const syncTimer = useRef<number | undefined>(undefined);
+
+  useEffect(() => {
+    if (accountRequest > 0) setAccountOpen(true);
+  }, [accountRequest]);
 
   const synchronize = useCallback(async (account: User) => {
     if (!supabase || userRef.current?.id !== account.id) return;
