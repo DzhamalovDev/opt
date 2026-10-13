@@ -271,7 +271,7 @@ export default function NotesApp({ user }: { user: User | null }) {
         if (error) throw error;
         setAuthMessage(
           data.session
-            ? "Аккаунт создан. Заметки синхронизируются."
+            ? "Аккаунт создан. Заметки и трекер синхронизируются."
             : "Проверь почту и подтверди адрес, затем войди.",
         );
       } else {
@@ -361,7 +361,7 @@ export default function NotesApp({ user }: { user: User | null }) {
                   <span>{user.email}</span>
                 </div>
               </div>
-              <p>Заметки доступны после входа с этим же email на телефоне и компьютере.</p>
+              <p>Заметки и трекер доступны после входа с этим же email на телефоне и компьютере.</p>
               <button type="button" className="secondary-button" onClick={() => void signOut()}>
                 <LogOut size={16} /> Выйти
               </button>
@@ -420,8 +420,8 @@ export default function NotesApp({ user }: { user: User | null }) {
               </form>
               {authMessage && <p className="notes-auth-message">{authMessage}</p>}
               <p>
-                После входа локальные заметки добавятся в аккаунт. Используй один и тот же email на
-                всех устройствах.
+                После входа локальные заметки и данные трекера добавятся в аккаунт. Используй один и
+                тот же email на всех устройствах.
               </p>
             </>
           ) : (
