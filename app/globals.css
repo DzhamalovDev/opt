@@ -890,6 +890,343 @@ select:focus-visible {
   padding: 20px 0;
 }
 
+.notes-page {
+  width: 100%;
+}
+.notes-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 14px 0 29px;
+}
+.notes-head h1 {
+  margin: 15px 0 8px;
+  font:
+    500 clamp(42px, 4.6vw, 68px) / 1.08 Oswald,
+    Impact,
+    sans-serif;
+  letter-spacing: -0.025em;
+}
+.notes-head h1 em {
+  color: var(--accent);
+  font-style: normal;
+}
+.notes-head p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.6;
+}
+.notes-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  min-height: 46px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.account-button,
+.notes-export {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-height: 38px;
+  padding: 0 12px;
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  font-size: 11px;
+  font-weight: 700;
+}
+.account-button:hover,
+.notes-export:hover {
+  border-color: var(--accent);
+}
+.notes-export {
+  width: 38px;
+  padding: 0;
+  margin-left: auto;
+}
+.notes-sync {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--muted);
+  font-size: 11px;
+}
+.notes-sync-synced {
+  color: #9acaa5;
+}
+.notes-sync-error {
+  color: #f0a4a8;
+}
+.notes-account {
+  width: min(100%, 450px);
+  margin-bottom: 16px;
+}
+.notes-account p {
+  margin: 15px 0 0;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.55;
+}
+.notes-account-copy {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--accent);
+}
+.notes-account-copy > div {
+  display: grid;
+  gap: 3px;
+  color: var(--ink);
+}
+.notes-account-copy span {
+  color: var(--muted);
+  font-size: 11px;
+}
+.notes-account .secondary-button {
+  margin-top: 18px;
+}
+.notes-auth-tabs {
+  display: flex;
+  gap: 20px;
+  border-bottom: 1px solid var(--line);
+}
+.notes-auth-tabs button {
+  padding: 0 0 12px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: var(--muted);
+  font-weight: 700;
+}
+.notes-auth-tabs button.active {
+  border-bottom-color: var(--accent);
+  color: var(--ink);
+}
+.notes-auth-form {
+  display: grid;
+  gap: 14px;
+  margin-top: 20px;
+}
+.notes-auth-form label {
+  display: grid;
+  gap: 7px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+}
+.notes-auth-form input {
+  width: 100%;
+  min-height: 42px;
+  padding: 0 12px;
+  color: var(--ink);
+  background: var(--surface-soft);
+  border: 1px solid var(--line);
+  outline: none;
+}
+.notes-auth-form input:focus {
+  border-color: var(--accent);
+}
+.notes-auth-form .primary-button {
+  justify-self: start;
+  margin-top: 3px;
+}
+.notes-account .notes-auth-message {
+  color: #f0a4a8;
+}
+.notes-layout {
+  display: grid;
+  grid-template-columns: minmax(240px, 350px) minmax(0, 1fr);
+  gap: 14px;
+  align-items: stretch;
+  min-height: min(70vh, 680px);
+}
+.notes-list-panel {
+  padding: 0;
+  overflow: hidden;
+}
+.notes-search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 18px;
+  padding: 0 12px;
+  min-height: 42px;
+  background: var(--surface-soft);
+  border: 1px solid var(--line);
+  color: var(--muted);
+}
+.notes-search:focus-within {
+  border-color: var(--accent);
+}
+.notes-search input {
+  min-width: 0;
+  flex: 1;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--ink);
+  font-size: 12px;
+}
+.notes-list-count {
+  padding: 0 18px 13px;
+  color: var(--muted);
+  font:
+    10px "Roboto Mono",
+    monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.notes-list {
+  max-height: min(61vh, 580px);
+  overflow-y: auto;
+  border-top: 1px solid var(--line);
+}
+.notes-item {
+  width: 100%;
+  padding: 17px 18px;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  border-left: 2px solid transparent;
+  background: transparent;
+  color: var(--ink);
+  text-align: left;
+}
+.notes-item:hover,
+.notes-item.active {
+  background: var(--surface-soft);
+}
+.notes-item.active {
+  border-left-color: var(--accent);
+}
+.notes-item > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.notes-item strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+}
+.notes-item svg {
+  flex: none;
+  color: var(--accent);
+}
+.notes-item p {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  margin: 8px 0;
+  color: var(--muted);
+  font-size: 11px;
+}
+.notes-item small {
+  color: #838a94;
+  font:
+    10px "Roboto Mono",
+    monospace;
+}
+.notes-empty-list {
+  padding: 28px 18px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+.notes-editor {
+  display: flex;
+  flex-direction: column;
+  min-height: 550px;
+  padding: 22px 26px;
+}
+.notes-editor-actions {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  color: var(--muted);
+  font-size: 10px;
+}
+.notes-editor-actions > span {
+  margin-left: auto;
+}
+.notes-editor-actions button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px;
+  color: var(--muted);
+  background: transparent;
+  border: 0;
+}
+.notes-editor-actions button:hover,
+.notes-editor-actions button.active {
+  color: var(--accent);
+}
+.notes-editor-actions .notes-back {
+  display: none;
+}
+.notes-editor-actions .notes-delete:hover {
+  color: #f0a4a8;
+}
+.notes-title-input {
+  width: 100%;
+  margin: 32px 0 18px;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--ink);
+  font:
+    500 clamp(29px, 3vw, 42px) / 1.2 Oswald,
+    Impact,
+    sans-serif;
+}
+.notes-title-input::placeholder,
+.notes-body-input::placeholder {
+  color: #777d85;
+}
+.notes-body-input {
+  width: 100%;
+  min-height: 360px;
+  flex: 1;
+  resize: vertical;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.75;
+}
+.notes-empty-editor {
+  margin: auto;
+  max-width: 410px;
+  text-align: center;
+}
+.notes-empty-editor > span {
+  color: var(--accent);
+  font:
+    10px "Roboto Mono",
+    monospace;
+  letter-spacing: 0.13em;
+}
+.notes-empty-editor h2 {
+  margin: 13px 0 9px;
+  font:
+    500 35px Oswald,
+    Impact,
+    sans-serif;
+}
+.notes-empty-editor p {
+  margin: 0 0 22px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
 @media (max-width: 1130px) {
   .sidebar {
     width: 230px;
@@ -950,6 +1287,9 @@ select:focus-visible {
   }
   .metrics-layout > .panel:last-child {
     grid-column: auto;
+  }
+  .notes-layout {
+    grid-template-columns: minmax(210px, 280px) minmax(0, 1fr);
   }
 }
 @media (max-width: 600px) {
@@ -1020,6 +1360,48 @@ select:focus-visible {
   }
   .section-tabs button {
     padding: 0 10px;
+  }
+  .notes-head {
+    display: block;
+    padding-top: 13px;
+  }
+  .notes-head .primary-button {
+    width: 100%;
+    margin-top: 20px;
+  }
+  .notes-layout {
+    display: block;
+    min-height: 0;
+  }
+  .notes-list-panel {
+    min-height: 250px;
+  }
+  .notes-list-panel.notes-mobile-hidden,
+  .notes-editor-empty {
+    display: none;
+  }
+  .notes-editor {
+    min-height: calc(100dvh - 280px);
+    padding: 18px;
+  }
+  .notes-editor-actions .notes-back {
+    display: inline-flex;
+    margin-right: auto;
+  }
+  .notes-editor-actions > span {
+    display: none;
+  }
+  .notes-title-input {
+    margin-top: 30px;
+  }
+  .notes-toolbar {
+    gap: 10px;
+  }
+  .account-button {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 }
 @media (max-width: 430px) {

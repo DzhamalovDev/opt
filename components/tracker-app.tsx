@@ -17,11 +17,13 @@ import {
   FileUp,
   LayoutDashboard,
   Menu,
+  NotebookPen,
   TrendingUp,
   Video,
   X,
 } from "lucide-react";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
+import NotesApp from "@/components/notes-app";
 import {
   createTracker,
   difference,
@@ -138,6 +140,7 @@ export default function TrackerApp() {
   const [storageError, setStorageError] = useState(false);
   const [saveState, setSaveState] = useState<"saved" | "saving">("saved");
   const [selectedWeek, setSelectedWeek] = useState<number | null>(null);
+  const [showNotes, setShowNotes] = useState(false);
   const [section, setSection] = useState<Section>("plan");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const fileInput = useRef<HTMLInputElement>(null);
@@ -205,6 +208,7 @@ export default function TrackerApp() {
   }
 
   function openWeek(index: number) {
+    setShowNotes(false);
     setSelectedWeek(index);
     setSection("plan");
     setSidebarOpen(false);
@@ -212,7 +216,14 @@ export default function TrackerApp() {
   }
 
   function openOverview() {
+    setShowNotes(false);
     setSelectedWeek(null);
+    setSidebarOpen(false);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function openNotes() {
+    setShowNotes(true);
     setSidebarOpen(false);
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
@@ -288,11 +299,20 @@ export default function TrackerApp() {
         <nav aria-label="Навигация трекера" className="side-nav">
           <button
             type="button"
-            className={`nav-link ${selectedWeek === null ? "active" : ""}`}
+            className={`nav-link ${selectedWeek === null && !showNotes ? "active" : ""}`}
             onClick={openOverview}
           >
             <LayoutDashboard size={18} />
             <span>Обзор</span>
+            <ChevronRight size={15} className="nav-arrow" />
+          </button>
+          <button
+            type="button"
+            className={`nav-link ${showNotes ? "active" : ""}`}
+            onClick={openNotes}
+          >
+            <NotebookPen size={18} />
+            <span>Мои заметки</span>
             <ChevronRight size={15} className="nav-arrow" />
           </button>
           <div className="nav-group-label">
@@ -329,7 +349,7 @@ export default function TrackerApp() {
           </div>
         </nav>
         <div className="sidebar-bottom">
-          <span className="sidebar-dot" /> Данные на этом устройстве
+          <span className="sidebar-dot" /> Трекер хранится на устройстве
         </div>
       </aside>
 
@@ -355,45 +375,53 @@ export default function TrackerApp() {
             </button>
             <span className="breadcrumb">
               OPT <ChevronRight size={14} />{" "}
-              {selectedWeek === null ? "Обзор" : `Неделя ${selectedWeek + 1}`}
+              {showNotes
+                ? "Мои заметки"
+                : selectedWeek === null
+                  ? "Обзор"
+                  : `Неделя ${selectedWeek + 1}`}
             </span>
           </div>
-          <div className="topbar-right">
-            <span className={`save-indicator ${storageError ? "save-error" : ""}`}>
-              <span />
-              {!ready
-                ? "Загрузка"
-                : storageError
-                  ? "Нет автосохранения"
-                  : saveState === "saving"
-                    ? "Сохраняется"
-                    : "Сохранено"}
-            </span>
-            <button
-              type="button"
-              className="top-icon"
-              title="Скачать резервную копию"
-              aria-label="Скачать резервную копию"
-              onClick={() =>
-                download(
-                  "opt-tracker-backup.json",
-                  JSON.stringify(data, null, 2),
-                  "application/json",
-                )
-              }
-            >
-              <Download size={18} />
-            </button>
-          </div>
+          {!showNotes && (
+            <div className="topbar-right">
+              <span className={`save-indicator ${storageError ? "save-error" : ""}`}>
+                <span />
+                {!ready
+                  ? "Загрузка"
+                  : storageError
+                    ? "Нет автосохранения"
+                    : saveState === "saving"
+                      ? "Сохраняется"
+                      : "Сохранено"}
+              </span>
+              <button
+                type="button"
+                className="top-icon"
+                title="Скачать резервную копию"
+                aria-label="Скачать резервную копию"
+                onClick={() =>
+                  download(
+                    "opt-tracker-backup.json",
+                    JSON.stringify(data, null, 2),
+                    "application/json",
+                  )
+                }
+              >
+                <Download size={18} />
+              </button>
+            </div>
+          )}
         </header>
 
         <main className="content">
-          {storageError && (
+          {!showNotes && storageError && (
             <div className="alert">
               Автосохранение в браузере недоступно. Скачивай резервную копию после заполнения.
             </div>
           )}
-          {!ready ? (
+          {showNotes ? (
+            <NotesApp />
+          ) : !ready ? (
             <div className="loading">Загружаем трекер…</div>
           ) : selectedWeek === null ? (
             <>

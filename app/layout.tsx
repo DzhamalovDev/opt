@@ -14,8 +14,8 @@ import "@fontsource/roboto-mono/latin-400.css";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Моя неделя — 90-дневный трекер",
-  description: "Личный трекер контента, аудитории и проектов на 90 дней.",
+  title: "OPT — трекер и заметки",
+  description: "Личный трекер на 90 дней и заметки с синхронизацией между устройствами.",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
