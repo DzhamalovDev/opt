@@ -1,6 +1,7 @@
 "use client";
 
-import { get, set } from "idb-keyval";
+import type { User } from "@supabase/supabase-js";
+import { del, get, set } from "idb-keyval";
 import {
   Activity,
   ArrowDownToLine,
@@ -24,6 +25,7 @@ import {
 } from "lucide-react";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import NotesApp from "@/components/notes-app";
+import { supabase } from "@/lib/supabase";
 import {
   createTracker,
   difference,
@@ -31,15 +33,23 @@ import {
   formatNumber,
   formatSigned,
   parseTracker,
+  parseTrackerSnapshot,
   sumField,
   TASKS,
   type TrackerData,
+  type TrackerSnapshot,
   toCsv,
   WEEK_RANGES,
 } from "@/lib/tracker";
 
 const STORAGE_KEY = "opt-tracker-v1";
+const userStorageKey = (id: string) => `opt-tracker-user-${id}-v1`;
 type Section = "plan" | "metrics" | "review";
+
+type CloudTrackerRow = {
+  data: unknown;
+  updated_at: string;
+};
 
 function download(name: string, content: string, type: string) {
   const url = URL.createObjectURL(new Blob([content], { type }));
@@ -136,9 +146,19 @@ function StatCard({
 
 export default function TrackerApp() {
   const [data, setData] = useState<TrackerData>(() => createTracker());
+  const [updatedAt, setUpdatedAt] = useState(() => new Date(0).toISOString());
+  const dataRef = useRef(data);
+  const updatedAtRef = useRef(updatedAt);
+  const userRef = useRef<User | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [ready, setReady] = useState(false);
   const [storageError, setStorageError] = useState(false);
   const [saveState, setSaveState] = useState<"saved" | "saving">("saved");
+  const [syncState, setSyncState] = useState<"local" | "syncing" | "synced" | "error">("local");
+  const [syncMessage, setSyncMessage] = useState("");
+  const syncBusy = useRef(false);
+  const syncAgain = useRef(false);
+  const syncTimer = useRef<number | undefined>(undefined);
   const [selectedWeek, setSelectedWeek] = useState<number | null>(null);
   const [showNotes, setShowNotes] = useState(false);
   const [section, setSection] = useState<Section>("plan");
@@ -146,12 +166,108 @@ export default function TrackerApp() {
   const fileInput = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
+    if (!supabase) return;
+    supabase.auth.getSession().then(({ data }) => setUser(data.session?.user ?? null));
+    const { data } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+    return () => data.subscription.unsubscribe();
+  }, []);
+
+  const synchronize = useCallback(async (account: User) => {
+    if (!supabase || userRef.current?.id !== account.id) return;
+    if (syncBusy.current) {
+      syncAgain.current = true;
+      return;
+    }
+    syncBusy.current = true;
+    try {
+      do {
+        syncAgain.current = false;
+        setSyncState("syncing");
+        const local: TrackerSnapshot = {
+          data: dataRef.current,
+          updatedAt: updatedAtRef.current,
+        };
+        const { data: cloudData, error } = await supabase
+          .from("trackers")
+          .select("data,updated_at")
+          .eq("user_id", account.id)
+          .maybeSingle();
+        if (error) throw error;
+        if (userRef.current?.id !== account.id) return;
+
+        const row = cloudData as CloudTrackerRow | null;
+        const remoteData = row ? parseTracker(row.data) : null;
+        let next = local;
+        if (remoteData && row && row.updated_at > local.updatedAt) {
+          next = { data: remoteData, updatedAt: row.updated_at };
+        } else if (!remoteData || !row || local.updatedAt > row.updated_at) {
+          const nextUpdatedAt =
+            local.updatedAt === new Date(0).toISOString()
+              ? new Date().toISOString()
+              : local.updatedAt;
+          const { error: writeError } = await supabase.from("trackers").upsert({
+            user_id: account.id,
+            data: local.data,
+            updated_at: nextUpdatedAt,
+          });
+          if (writeError) throw writeError;
+          next = { data: local.data, updatedAt: nextUpdatedAt };
+        }
+
+        if (userRef.current?.id !== account.id) return;
+        dataRef.current = next.data;
+        updatedAtRef.current = next.updatedAt;
+        setData(next.data);
+        setUpdatedAt(next.updatedAt);
+        await set(userStorageKey(account.id), next);
+        await del(STORAGE_KEY);
+        setSaveState("saved");
+        setSyncState("synced");
+        setSyncMessage("");
+      } while (syncAgain.current);
+    } catch (error) {
+      setSyncState("error");
+      setSyncMessage(
+        error instanceof Error ? error.message : "Не удалось синхронизировать трекер.",
+      );
+    } finally {
+      syncBusy.current = false;
+    }
+  }, []);
+
+  useEffect(() => {
     let alive = true;
-    get<unknown>(STORAGE_KEY)
-      .then((stored) => {
+    userRef.current = user;
+    setReady(false);
+    setStorageError(false);
+    setSyncState(user ? "syncing" : "local");
+    Promise.all([
+      get<unknown>(STORAGE_KEY),
+      user ? get<unknown>(userStorageKey(user.id)) : Promise.resolve(undefined),
+    ])
+      .then(([guestValue, userValue]) => {
         if (!alive) return;
-        const parsed = parseTracker(stored);
-        if (parsed) setData(parsed);
+        const guest = parseTrackerSnapshot(guestValue);
+        const saved = parseTrackerSnapshot(userValue);
+        const snapshot = user
+          ? saved && guest
+            ? saved.updatedAt >= guest.updatedAt
+              ? saved
+              : guest
+            : (saved ?? guest)
+          : guest;
+        const next: TrackerSnapshot = snapshot ?? {
+          data: createTracker(),
+          updatedAt: new Date(0).toISOString(),
+        };
+        dataRef.current = next.data;
+        updatedAtRef.current = next.updatedAt;
+        setData(next.data);
+        setUpdatedAt(next.updatedAt);
+        setSaveState("saved");
+        if (user) void synchronize(user);
       })
       .catch(() => {
         if (alive) setStorageError(true);
@@ -162,46 +278,88 @@ export default function TrackerApp() {
     return () => {
       alive = false;
     };
-  }, []);
+  }, [user, synchronize]);
 
   useEffect(() => {
     if (!ready || storageError) return;
     const timer = window.setTimeout(() => {
-      set(STORAGE_KEY, data)
+      const snapshot = { data, updatedAt };
+      set(user ? userStorageKey(user.id) : STORAGE_KEY, snapshot)
         .then(() => setSaveState("saved"))
         .catch(() => setStorageError(true));
     }, 350);
     return () => window.clearTimeout(timer);
-  }, [data, ready, storageError]);
+  }, [data, ready, storageError, updatedAt, user]);
 
-  const updateField = useCallback((weekIndex: number, key: FieldKey, value: string) => {
+  useEffect(() => {
+    dataRef.current = data;
+    updatedAtRef.current = updatedAt;
+    if (!ready || !user) return;
+    setSyncState("syncing");
+    window.clearTimeout(syncTimer.current);
+    syncTimer.current = window.setTimeout(() => void synchronize(user), 700);
+    return () => window.clearTimeout(syncTimer.current);
+  }, [data, ready, synchronize, updatedAt, user]);
+
+  useEffect(() => {
+    if (!user) return;
+    const refresh = () => {
+      if (document.visibilityState === "visible" && navigator.onLine) void synchronize(user);
+    };
+    window.addEventListener("focus", refresh);
+    window.addEventListener("online", refresh);
+    document.addEventListener("visibilitychange", refresh);
+    return () => {
+      window.removeEventListener("focus", refresh);
+      window.removeEventListener("online", refresh);
+      document.removeEventListener("visibilitychange", refresh);
+    };
+  }, [user, synchronize]);
+
+  const updateTracker = useCallback((updater: (previous: TrackerData) => TrackerData) => {
+    const nextUpdatedAt = new Date().toISOString();
+    updatedAtRef.current = nextUpdatedAt;
+    setUpdatedAt(nextUpdatedAt);
     setSaveState("saving");
-    setData((previous) => ({
-      ...previous,
-      weeks: previous.weeks.map((week, index) =>
-        index === weekIndex ? { ...week, fields: { ...week.fields, [key]: value } } : week,
-      ),
-    }));
+    if (userRef.current) setSyncState("syncing");
+    setData((previous) => {
+      const next = updater(previous);
+      dataRef.current = next;
+      return next;
+    });
   }, []);
 
-  const updateCheck = useCallback((weekIndex: number, taskIndex: number) => {
-    setSaveState("saving");
-    setData((previous) => ({
-      ...previous,
-      weeks: previous.weeks.map((week, index) =>
-        index === weekIndex
-          ? {
-              ...week,
-              checks: week.checks.map((check, task) => (task === taskIndex ? !check : check)),
-            }
-          : week,
-      ),
-    }));
-  }, []);
+  const updateField = useCallback(
+    (weekIndex: number, key: FieldKey, value: string) => {
+      updateTracker((previous) => ({
+        ...previous,
+        weeks: previous.weeks.map((week, index) =>
+          index === weekIndex ? { ...week, fields: { ...week.fields, [key]: value } } : week,
+        ),
+      }));
+    },
+    [updateTracker],
+  );
+
+  const updateCheck = useCallback(
+    (weekIndex: number, taskIndex: number) => {
+      updateTracker((previous) => ({
+        ...previous,
+        weeks: previous.weeks.map((week, index) =>
+          index === weekIndex
+            ? {
+                ...week,
+                checks: week.checks.map((check, task) => (task === taskIndex ? !check : check)),
+              }
+            : week,
+        ),
+      }));
+    },
+    [updateTracker],
+  );
 
   function updateBaseline(key: keyof TrackerData["baseline"], value: string) {
-    setSaveState("saving");
-    setData((previous) => ({
+    updateTracker((previous) => ({
       ...previous,
       baseline: { ...previous.baseline, [key]: value },
     }));
@@ -234,8 +392,7 @@ export default function TrackerApp() {
       const parsed = parseTracker(JSON.parse(await file.text()));
       if (!parsed) throw new Error("Файл не похож на резервную копию трекера.");
       if (!window.confirm("Заменить текущие записи данными из файла?")) return;
-      setSaveState("saving");
-      setData(parsed);
+      updateTracker(() => parsed);
       setSelectedWeek(null);
     } catch (error) {
       window.alert(error instanceof Error ? error.message : "Не удалось прочитать файл.");
@@ -348,9 +505,21 @@ export default function TrackerApp() {
             })}
           </div>
         </nav>
-        <div className="sidebar-bottom">
-          <span className="sidebar-dot" /> Трекер хранится на устройстве
-        </div>
+        <button
+          type="button"
+          className={`sidebar-bottom ${syncState === "error" ? "sync-error" : ""}`}
+          onClick={openNotes}
+          title={user?.email ?? "Открыть вход в аккаунт"}
+        >
+          <span className="sidebar-dot" />
+          {user
+            ? syncState === "syncing"
+              ? "Трекер синхронизируется"
+              : syncState === "error"
+                ? "Ошибка синхронизации"
+                : "Трекер в облаке"
+            : "Войти для синхронизации"}
+        </button>
       </aside>
 
       {sidebarOpen && (
@@ -384,15 +553,23 @@ export default function TrackerApp() {
           </div>
           {!showNotes && (
             <div className="topbar-right">
-              <span className={`save-indicator ${storageError ? "save-error" : ""}`}>
+              <span
+                className={`save-indicator ${storageError || syncState === "error" ? "save-error" : ""}`}
+              >
                 <span />
                 {!ready
                   ? "Загрузка"
-                  : storageError
-                    ? "Нет автосохранения"
-                    : saveState === "saving"
-                      ? "Сохраняется"
-                      : "Сохранено"}
+                  : syncState === "error"
+                    ? "Ошибка синхронизации"
+                    : user && syncState === "syncing"
+                      ? "Синхронизация"
+                      : user && syncState === "synced"
+                        ? "В облаке"
+                        : storageError
+                          ? "Нет автосохранения"
+                          : saveState === "saving"
+                            ? "Сохраняется"
+                            : "Сохранено"}
               </span>
               <button
                 type="button"
@@ -416,11 +593,18 @@ export default function TrackerApp() {
         <main className="content">
           {!showNotes && storageError && (
             <div className="alert">
-              Автосохранение в браузере недоступно. Скачивай резервную копию после заполнения.
+              {user
+                ? "Локальный кеш браузера недоступен. Данные аккаунта продолжат сохраняться в облаке."
+                : "Автосохранение в этом браузере недоступно. Войдите в аккаунт для облачного сохранения."}
+            </div>
+          )}
+          {!showNotes && syncState === "error" && (
+            <div className="alert">
+              Не удалось синхронизировать трекер. Локальная версия сохранена. {syncMessage}
             </div>
           )}
           {showNotes ? (
-            <NotesApp />
+            <NotesApp user={user} />
           ) : !ready ? (
             <div className="loading">Загружаем трекер…</div>
           ) : selectedWeek === null ? (
@@ -550,12 +734,17 @@ export default function TrackerApp() {
                     </span>
                     <div>
                       <h3>Твои данные — у тебя</h3>
-                      <p>Трекер работает без аккаунта.</p>
+                      <p>
+                        {user
+                          ? "Подключена синхронизация аккаунта."
+                          : "Трекер работает без аккаунта."}
+                      </p>
                     </div>
                   </div>
                   <p>
-                    Записи сохраняются в браузере этого устройства. Резервная копия переносит их на
-                    другой компьютер.
+                    {user
+                      ? `Изменения синхронизируются для ${user.email ?? "твоего аккаунта"}. Резервная копия остаётся доступна.`
+                      : "Записи сохраняются в браузере этого устройства. Войди через «Мои заметки», чтобы синхронизировать их с телефоном."}
                   </p>
                   <div className="backup-actions">
                     <button

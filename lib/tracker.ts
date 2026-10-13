@@ -88,6 +88,11 @@ export type TrackerData = {
   weeks: WeekData[];
 };
 
+export type TrackerSnapshot = {
+  data: TrackerData;
+  updatedAt: string;
+};
+
 const weekSchema = z.object({
   fields: z.record(z.string(), z.string()),
   checks: z.array(z.boolean()),
@@ -138,6 +143,18 @@ export function parseTracker(value: unknown): TrackerData | null {
       checks: TASKS.map((_, taskIndex) => week.checks[taskIndex] ?? false),
     })),
   };
+}
+
+export function parseTrackerSnapshot(value: unknown): TrackerSnapshot | null {
+  const legacy = parseTracker(value);
+  if (legacy) return { data: legacy, updatedAt: new Date(0).toISOString() };
+  if (!value || typeof value !== "object") return null;
+  const candidate = value as { data?: unknown; updatedAt?: unknown };
+  const data = parseTracker(candidate.data);
+  if (!data || typeof candidate.updatedAt !== "string") return null;
+  const timestamp = new Date(candidate.updatedAt);
+  if (Number.isNaN(timestamp.getTime())) return null;
+  return { data, updatedAt: timestamp.toISOString() };
 }
 
 export function numberOrNull(value: string): number | null {
