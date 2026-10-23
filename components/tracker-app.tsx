@@ -475,7 +475,7 @@ export default function TrackerApp() {
             <span>Мои заметки</span>
             <ChevronRight size={15} className="nav-arrow" />
           </button>
-          <a className="nav-link" href="/scripts_dashboard.html">
+          <a className="nav-link" href="/scripts/">
             <Clapperboard size={18} />
             <span>Сценарии</span>
             <ChevronRight size={15} className="nav-arrow" />
