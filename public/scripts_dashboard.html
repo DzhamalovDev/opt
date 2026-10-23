@@ -1,0 +1,1763 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="dark" />
+    <title>OPT — Сценарии Shorts / Reels</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #202124;
+        --sidebar: #18191c;
+        --surface: #292b2f;
+        --surface-2: #24262a;
+        --surface-3: #1f2023;
+        --line: #41454c;
+        --line-soft: #35383e;
+        --text: #f4f5f6;
+        --muted: #a5acb6;
+        --muted-2: #747b86;
+        --accent: #e31b2b;
+        --red: #ff5c67;
+        --yellow: #f2c94c;
+        --green: #48d597;
+        --blue: #62a8ff;
+        --sidebar-width: 258px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        min-width: 320px;
+        background: var(--bg);
+        color: var(--text);
+        font-family:
+          Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI",
+          sans-serif;
+        font-size: 14px;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      button,
+      input {
+        font: inherit;
+      }
+
+      button,
+      label {
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      button {
+        cursor: pointer;
+      }
+
+      button:focus-visible,
+      input:focus-visible,
+      a:focus-visible {
+        outline: 3px solid rgb(227 27 43 / 35%);
+        outline-offset: 2px;
+      }
+
+      .app-shell {
+        display: flex;
+        min-height: 100vh;
+      }
+
+      .app-sidebar {
+        position: fixed;
+        inset: 0 auto 0 0;
+        z-index: 30;
+        display: flex;
+        width: var(--sidebar-width);
+        flex-direction: column;
+        background: var(--sidebar);
+        border-right: 1px solid #24262a;
+      }
+
+      .sidebar-head {
+        padding: 30px 20px 22px;
+      }
+
+      .brand {
+        display: flex;
+        align-items: baseline;
+        gap: 8px;
+        color: var(--text);
+        font-size: 22px;
+        font-weight: 750;
+        letter-spacing: -0.06em;
+        text-decoration: none;
+      }
+
+      .brand-dot {
+        color: var(--accent);
+      }
+
+      .brand-muted {
+        color: #8f949c;
+        font-size: 14px;
+        font-weight: 550;
+        letter-spacing: 0.02em;
+      }
+
+      .sidebar-caption {
+        margin-top: 9px;
+        color: var(--muted);
+        font-size: 11px;
+      }
+
+      .side-nav {
+        display: grid;
+        gap: 2px;
+        padding: 0 11px;
+      }
+
+      .nav-link {
+        display: flex;
+        min-height: 44px;
+        align-items: center;
+        gap: 12px;
+        padding: 0 12px;
+        border-left: 2px solid transparent;
+        color: #c4c9d1;
+        font-weight: 700;
+        text-decoration: none;
+      }
+
+      .nav-link:hover {
+        background: rgb(255 255 255 / 7%);
+      }
+
+      .nav-link.active {
+        border-left-color: var(--accent);
+        background: var(--surface);
+        color: var(--text);
+      }
+
+      .nav-icon {
+        display: grid;
+        width: 20px;
+        height: 20px;
+        place-items: center;
+        color: currentColor;
+      }
+
+      .nav-icon svg {
+        width: 18px;
+        height: 18px;
+        fill: none;
+        stroke: currentColor;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-width: 1.8;
+      }
+
+      .nav-arrow {
+        margin-left: auto;
+        color: #737982;
+        font-size: 17px;
+      }
+
+      .sidebar-meta {
+        margin: auto 20px 22px;
+        padding-top: 20px;
+        border-top: 1px solid var(--line-soft);
+        color: var(--muted-2);
+        font-size: 11px;
+        line-height: 1.55;
+      }
+
+      .sidebar-meta strong {
+        display: block;
+        margin-bottom: 5px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .app-main {
+        width: calc(100% - var(--sidebar-width));
+        margin-left: var(--sidebar-width);
+      }
+
+      .topbar {
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        display: flex;
+        min-height: 62px;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 40px;
+        border-bottom: 1px solid var(--line-soft);
+        background: rgb(32 33 36 / 92%);
+        backdrop-filter: blur(14px);
+      }
+
+      .breadcrumb {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 650;
+      }
+
+      .breadcrumb b {
+        color: var(--text);
+      }
+
+      .mobile-menu {
+        display: none;
+        width: 38px;
+        height: 38px;
+        place-items: center;
+        border: 1px solid var(--line);
+        background: var(--surface);
+        color: var(--text);
+      }
+
+      .top-count {
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .content {
+        width: min(1220px, 100%);
+        margin: 0 auto;
+        padding: 46px 40px 80px;
+      }
+
+      .hero {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 330px;
+        gap: 34px;
+        align-items: end;
+        margin-bottom: 30px;
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 13px;
+        color: var(--red);
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+
+      .eyebrow::before {
+        width: 18px;
+        height: 2px;
+        background: var(--accent);
+        content: "";
+      }
+
+      h1 {
+        max-width: 760px;
+        margin: 0;
+        font-size: clamp(36px, 5vw, 64px);
+        font-weight: 760;
+        letter-spacing: -0.055em;
+        line-height: 0.98;
+      }
+
+      .hero-copy {
+        max-width: 680px;
+        margin: 18px 0 0;
+        color: var(--muted);
+        font-size: 15px;
+        line-height: 1.6;
+      }
+
+      .progress-card {
+        padding: 20px;
+        border: 1px solid var(--line);
+        background: var(--surface);
+      }
+
+      .progress-top,
+      .progress-stats {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 14px;
+      }
+
+      .progress-top span {
+        color: var(--muted);
+        font-size: 11px;
+        font-weight: 750;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .progress-top strong {
+        font-size: 26px;
+        letter-spacing: -0.04em;
+      }
+
+      .progress-track {
+        height: 6px;
+        margin: 16px 0 13px;
+        overflow: hidden;
+        background: #151619;
+      }
+
+      .progress-fill {
+        width: 0;
+        height: 100%;
+        background: var(--accent);
+        transition: width 220ms ease;
+      }
+
+      .progress-stats {
+        color: var(--muted);
+        font-size: 11px;
+      }
+
+      .progress-stats b {
+        color: var(--text);
+        font-weight: 650;
+      }
+
+      .toolbar {
+        position: sticky;
+        top: 62px;
+        z-index: 15;
+        display: grid;
+        grid-template-columns: minmax(230px, 1fr) minmax(0, auto);
+        gap: 14px;
+        margin: 0 -1px 28px;
+        padding: 14px 1px;
+        background: rgb(32 33 36 / 94%);
+        backdrop-filter: blur(14px);
+      }
+
+      .search-wrap {
+        position: relative;
+      }
+
+      .search-icon {
+        position: absolute;
+        top: 50%;
+        left: 14px;
+        width: 18px;
+        height: 18px;
+        transform: translateY(-50%);
+        fill: none;
+        stroke: var(--muted);
+        stroke-linecap: round;
+        stroke-width: 1.8;
+        pointer-events: none;
+      }
+
+      .search {
+        width: 100%;
+        height: 44px;
+        padding: 0 14px 0 42px;
+        border: 1px solid var(--line);
+        border-radius: 0;
+        background: var(--surface-3);
+        color: var(--text);
+      }
+
+      .search::placeholder {
+        color: #747b86;
+      }
+
+      .filters {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        gap: 6px;
+      }
+
+      .filter-button {
+        min-height: 44px;
+        padding: 0 13px;
+        border: 1px solid var(--line);
+        border-radius: 0;
+        background: var(--surface-3);
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 700;
+      }
+
+      .filter-button:hover,
+      .filter-button.active {
+        border-color: #626771;
+        background: var(--surface);
+        color: var(--text);
+      }
+
+      .filter-button.active {
+        box-shadow: inset 0 -2px var(--accent);
+      }
+
+      .result-line {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 12px;
+        color: var(--muted);
+        font-size: 11px;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+
+      .cards {
+        display: grid;
+        gap: 18px;
+      }
+
+      .script-card {
+        border: 1px solid var(--line);
+        background: var(--surface);
+        transition:
+          border-color 160ms ease,
+          background 160ms ease;
+      }
+
+      .script-card:hover {
+        border-color: #555b64;
+      }
+
+      .script-card.is-complete {
+        border-color: rgb(72 213 151 / 44%);
+      }
+
+      .script-card[hidden] {
+        display: none;
+      }
+
+      .card-head {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr) auto;
+        gap: 16px;
+        align-items: start;
+        padding: 22px 22px 18px;
+        border-bottom: 1px solid var(--line-soft);
+      }
+
+      .script-number {
+        display: grid;
+        width: 42px;
+        height: 42px;
+        place-items: center;
+        border: 1px solid var(--line);
+        background: var(--surface-3);
+        color: var(--muted);
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 12px;
+      }
+
+      .card-title-wrap {
+        min-width: 0;
+      }
+
+      .block-tag {
+        display: block;
+        margin: 1px 0 6px;
+        color: var(--muted);
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+
+      .card-title {
+        margin: 0;
+        font-size: clamp(19px, 2.3vw, 25px);
+        letter-spacing: -0.025em;
+        line-height: 1.17;
+      }
+
+      .card-actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .status-check {
+        display: flex;
+        min-height: 38px;
+        align-items: center;
+        gap: 8px;
+        padding: 0 11px;
+        border: 1px solid var(--line);
+        background: var(--surface-3);
+        color: var(--muted);
+        cursor: pointer;
+        font-size: 11px;
+        font-weight: 700;
+        white-space: nowrap;
+      }
+
+      .status-check:has(input:checked) {
+        border-color: rgb(72 213 151 / 48%);
+        background: rgb(72 213 151 / 8%);
+        color: #9ee8c6;
+      }
+
+      .status-check input {
+        width: 15px;
+        height: 15px;
+        margin: 0;
+        accent-color: #42c98c;
+      }
+
+      .teleprompter-button {
+        display: inline-flex;
+        min-height: 38px;
+        align-items: center;
+        gap: 8px;
+        padding: 0 12px;
+        border: 1px solid #5a5f68;
+        background: transparent;
+        color: var(--text);
+        font-size: 11px;
+        font-weight: 750;
+        white-space: nowrap;
+      }
+
+      .teleprompter-button:hover {
+        border-color: var(--text);
+        background: rgb(255 255 255 / 5%);
+      }
+
+      .play-icon {
+        color: var(--red);
+        font-size: 12px;
+      }
+
+      .script-segments {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1px;
+        background: var(--line-soft);
+      }
+
+      .segment {
+        position: relative;
+        min-height: 150px;
+        padding: 20px 22px 22px;
+        background: var(--surface-2);
+      }
+
+      .segment::before {
+        position: absolute;
+        inset: 0 auto 0 0;
+        width: 3px;
+        background: var(--segment-color);
+        content: "";
+      }
+
+      .segment-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 11px;
+        color: var(--segment-color);
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+
+      .segment p {
+        margin: 0;
+        color: #e6e8eb;
+        font-size: 14px;
+        line-height: 1.58;
+      }
+
+      .segment-hook {
+        --segment-color: var(--red);
+      }
+
+      .segment-pain {
+        --segment-color: var(--yellow);
+      }
+
+      .segment-solution {
+        --segment-color: var(--green);
+      }
+
+      .segment-cta {
+        --segment-color: var(--blue);
+      }
+
+      .visual-notes {
+        display: grid;
+        grid-template-columns: 210px minmax(0, 1fr);
+        gap: 20px;
+        padding: 19px 22px 21px;
+        background: #222428;
+      }
+
+      .visual-notes h3 {
+        margin: 0;
+        color: var(--text);
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.07em;
+        line-height: 1.45;
+        text-transform: uppercase;
+      }
+
+      .visual-notes h3 span {
+        display: block;
+        margin-top: 4px;
+        color: var(--muted);
+        font-size: 10px;
+        font-weight: 550;
+        letter-spacing: 0;
+        text-transform: none;
+      }
+
+      .visual-notes ul {
+        display: grid;
+        gap: 7px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .visual-notes li {
+        position: relative;
+        padding-left: 16px;
+        color: #bfc4cb;
+        font-size: 12px;
+        line-height: 1.5;
+      }
+
+      .visual-notes li::before {
+        position: absolute;
+        top: 0.65em;
+        left: 0;
+        width: 5px;
+        height: 5px;
+        background: #6c727c;
+        content: "";
+      }
+
+      .empty-state {
+        display: none;
+        padding: 70px 24px;
+        border: 1px dashed var(--line);
+        color: var(--muted);
+        text-align: center;
+      }
+
+      .empty-state.visible {
+        display: block;
+      }
+
+      .teleprompter {
+        position: fixed;
+        inset: 0;
+        z-index: 100;
+        display: none;
+        grid-template-rows: auto minmax(0, 1fr);
+        background: #000;
+        color: #fff;
+      }
+
+      .teleprompter.open {
+        display: grid;
+      }
+
+      .prompt-controls {
+        display: flex;
+        min-height: 70px;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 22px;
+        border-bottom: 1px solid #222;
+        background: #080808;
+      }
+
+      .prompt-title {
+        min-width: 0;
+        margin-right: auto;
+      }
+
+      .prompt-title small {
+        display: block;
+        margin-bottom: 3px;
+        color: #7f7f7f;
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+
+      .prompt-title strong {
+        display: block;
+        max-width: 430px;
+        overflow: hidden;
+        font-size: 14px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .speed-control {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #aaa;
+        font-size: 11px;
+        font-weight: 700;
+      }
+
+      .speed-control input {
+        width: 140px;
+        accent-color: var(--accent);
+      }
+
+      .prompt-button {
+        min-height: 38px;
+        padding: 0 14px;
+        border: 1px solid #3d3d3d;
+        background: #111;
+        color: #fff;
+        font-size: 12px;
+        font-weight: 750;
+      }
+
+      .prompt-button.primary {
+        min-width: 88px;
+        border-color: var(--accent);
+        background: var(--accent);
+      }
+
+      .prompt-close {
+        display: grid;
+        width: 38px;
+        height: 38px;
+        place-items: center;
+        border: 1px solid #3d3d3d;
+        background: #111;
+        color: #fff;
+        font-size: 22px;
+      }
+
+      .prompt-stage {
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        scroll-behavior: auto;
+        scrollbar-color: #3a3a3a #000;
+      }
+
+      .prompt-text {
+        width: min(1120px, 88vw);
+        min-height: calc(100vh - 70px);
+        margin: 0 auto;
+        padding: 24vh 0 55vh;
+        font-size: clamp(38px, 5.6vw, 82px);
+        font-weight: 650;
+        letter-spacing: -0.035em;
+        line-height: 1.28;
+        text-align: center;
+      }
+
+      .prompt-text p {
+        margin: 0 0 1.4em;
+      }
+
+      .mobile-overlay {
+        display: none;
+      }
+
+      @media (max-width: 1120px) {
+        .toolbar {
+          grid-template-columns: 1fr;
+        }
+
+        .filters {
+          justify-content: flex-start;
+        }
+
+        .card-head {
+          grid-template-columns: auto minmax(0, 1fr);
+        }
+
+        .card-actions {
+          grid-column: 1 / -1;
+          padding-left: 58px;
+        }
+      }
+
+      @media (max-width: 880px) {
+        :root {
+          --sidebar-width: 250px;
+        }
+
+        .app-sidebar {
+          transform: translateX(-101%);
+          transition: transform 180ms ease;
+        }
+
+        .app-sidebar.open {
+          transform: translateX(0);
+        }
+
+        .app-main {
+          width: 100%;
+          margin-left: 0;
+        }
+
+        .mobile-menu {
+          display: grid;
+        }
+
+        .mobile-overlay.open {
+          position: fixed;
+          inset: 0;
+          z-index: 25;
+          display: block;
+          border: 0;
+          background: rgb(0 0 0 / 55%);
+        }
+
+        .topbar {
+          padding: 0 20px;
+        }
+
+        .breadcrumb {
+          margin-right: auto;
+          margin-left: 12px;
+        }
+
+        .content {
+          padding: 34px 20px 60px;
+        }
+
+        .hero {
+          grid-template-columns: 1fr;
+        }
+
+        .progress-card {
+          max-width: none;
+        }
+
+        .prompt-controls {
+          flex-wrap: wrap;
+          padding: 10px 12px;
+        }
+
+        .prompt-title {
+          width: calc(100% - 52px);
+          order: -2;
+        }
+
+        .prompt-close {
+          order: -1;
+        }
+      }
+
+      @media (max-width: 680px) {
+        h1 {
+          font-size: 40px;
+        }
+
+        .toolbar {
+          position: static;
+        }
+
+        .filters {
+          flex-wrap: nowrap;
+          padding-bottom: 5px;
+          overflow-x: auto;
+        }
+
+        .filter-button {
+          flex: none;
+        }
+
+        .card-head {
+          grid-template-columns: auto minmax(0, 1fr);
+          padding: 18px;
+        }
+
+        .card-actions {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          padding-left: 0;
+        }
+
+        .teleprompter-button {
+          grid-column: 1 / -1;
+          justify-content: center;
+        }
+
+        .status-check {
+          justify-content: center;
+        }
+
+        .script-segments {
+          grid-template-columns: 1fr;
+        }
+
+        .segment {
+          min-height: 0;
+          padding: 18px;
+        }
+
+        .visual-notes {
+          grid-template-columns: 1fr;
+          gap: 12px;
+          padding: 18px;
+        }
+
+        .top-count {
+          display: none;
+        }
+
+        .speed-control {
+          width: 100%;
+        }
+
+        .speed-control input {
+          flex: 1;
+          width: auto;
+        }
+      }
+
+      @media print {
+        @page {
+          size: A4 portrait;
+          margin: 8mm;
+        }
+
+        :root {
+          color-scheme: light;
+        }
+
+        html,
+        body {
+          background: #fff;
+          color: #111;
+          font-size: 8pt;
+        }
+
+        .app-sidebar,
+        .topbar,
+        .hero,
+        .toolbar,
+        .result-line,
+        .empty-state,
+        .teleprompter.teleprompter,
+        .mobile-overlay.mobile-overlay,
+        .card-actions {
+          display: none;
+        }
+
+        .app-main,
+        .content {
+          width: 100%;
+          max-width: none;
+          margin: 0;
+          padding: 0;
+        }
+
+        .cards {
+          display: block;
+        }
+
+        .script-card.script-card,
+        .script-card[hidden] {
+          display: block;
+          height: 132mm;
+          margin: 0 0 5mm;
+          overflow: hidden;
+          break-inside: avoid;
+          border: 0.3mm solid #bfc3c8;
+          background: #fff;
+          color: #111;
+        }
+
+        .script-card:nth-child(2n) {
+          margin-bottom: 0;
+          break-after: page;
+        }
+
+        .card-head {
+          display: grid;
+          grid-template-columns: auto 1fr;
+          gap: 3mm;
+          padding: 4mm;
+          border-bottom: 0.25mm solid #d9dcdf;
+        }
+
+        .script-number {
+          width: 9mm;
+          height: 9mm;
+          border: 0.25mm solid #bfc3c8;
+          background: #f3f4f5;
+          color: #333;
+          font-size: 7.5pt;
+        }
+
+        .block-tag {
+          margin: 0 0 1mm;
+          color: #555;
+          font-size: 6.5pt;
+        }
+
+        .card-title {
+          color: #111;
+          font-size: 13pt;
+          line-height: 1.12;
+        }
+
+        .script-segments {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 0;
+          background: #d9dcdf;
+        }
+
+        .segment {
+          min-height: 0;
+          padding: 3.2mm 3.5mm;
+          background: #fff;
+        }
+
+        .segment::before {
+          width: 0.8mm;
+          print-color-adjust: exact;
+          -webkit-print-color-adjust: exact;
+        }
+
+        .segment-label {
+          margin-bottom: 1.5mm;
+          font-size: 6.4pt;
+        }
+
+        .segment p {
+          color: #151515;
+          font-size: 7.5pt;
+          line-height: 1.27;
+        }
+
+        .visual-notes {
+          display: grid;
+          grid-template-columns: 34mm 1fr;
+          gap: 4mm;
+          padding: 3.5mm 4mm;
+          background: #f1f2f3;
+          print-color-adjust: exact;
+          -webkit-print-color-adjust: exact;
+        }
+
+        .visual-notes h3 {
+          color: #111;
+          font-size: 6.8pt;
+        }
+
+        .visual-notes h3 span {
+          color: #555;
+          font-size: 6.2pt;
+        }
+
+        .visual-notes ul {
+          gap: 1mm;
+        }
+
+        .visual-notes li {
+          color: #333;
+          font-size: 6.8pt;
+          line-height: 1.25;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="app-sidebar" id="sidebar">
+        <div class="sidebar-head">
+          <a class="brand" href="/">
+            <span>OPT<span class="brand-dot">.</span></span>
+            <span class="brand-muted">/ STUDIO</span>
+          </a>
+          <div class="sidebar-caption">Контент и видеопродакшен</div>
+        </div>
+        <nav class="side-nav" aria-label="Навигация OPT">
+          <a class="nav-link" href="/">
+            <span class="nav-icon">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <rect x="3" y="3" width="7" height="7"></rect>
+                <rect x="14" y="3" width="7" height="7"></rect>
+                <rect x="3" y="14" width="7" height="7"></rect>
+                <rect x="14" y="14" width="7" height="7"></rect>
+              </svg>
+            </span>
+            <span>Обзор</span>
+            <span class="nav-arrow">›</span>
+          </a>
+          <a class="nav-link active" href="/scripts_dashboard.html" aria-current="page">
+            <span class="nav-icon">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M4 8h16v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z"></path>
+                <path d="m4 8 3-5m3 5 3-5m3 5 3-5"></path>
+                <path d="M4 13h16"></path>
+              </svg>
+            </span>
+            <span>Сценарии</span>
+            <span class="nav-arrow">›</span>
+          </a>
+        </nav>
+        <div class="sidebar-meta">
+          <strong>20 сценариев · 4 блока</strong>
+          От идеи до готового монтажа. Статусы сохраняются на этом устройстве.
+        </div>
+      </aside>
+
+      <button class="mobile-overlay" id="mobileOverlay" type="button" aria-label="Закрыть меню"></button>
+
+      <main class="app-main">
+        <header class="topbar">
+          <button class="mobile-menu" id="mobileMenu" type="button" aria-label="Открыть меню">☰</button>
+          <div class="breadcrumb">
+            <b>OPT</b><span>›</span><span>Контент</span><span>›</span><b>Сценарии</b>
+          </div>
+          <span class="top-count" id="topCount">20 сценариев</span>
+        </header>
+
+        <div class="content">
+          <section class="hero">
+            <div>
+              <span class="eyebrow">Shorts / Reels production</span>
+              <h1>Сценарии, готовые к съёмке</h1>
+              <p class="hero-copy">
+                Реплики, таймкоды и монтажные подсказки в одном месте. Отмечай прогресс,
+                запускай телесуфлёр и печатай подборку в PDF.
+              </p>
+            </div>
+            <section class="progress-card" aria-label="Прогресс производства">
+              <div class="progress-top">
+                <span>Готово к публикации</span>
+                <strong id="progressValue">0 / 20</strong>
+              </div>
+              <div class="progress-track" aria-hidden="true">
+                <div class="progress-fill" id="progressFill"></div>
+              </div>
+              <div class="progress-stats">
+                <span>Отснято <b id="shotCount">0</b></span>
+                <span>Смонтировано <b id="editedCount">0</b></span>
+              </div>
+            </section>
+          </section>
+
+          <section class="toolbar" aria-label="Фильтры сценариев">
+            <div class="search-wrap">
+              <svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="11" cy="11" r="7"></circle>
+                <path d="m20 20-4-4"></path>
+              </svg>
+              <input
+                class="search"
+                id="searchInput"
+                type="search"
+                placeholder="Поиск: АУСН, Wildberries, 115-ФЗ..."
+                autocomplete="off"
+              />
+            </div>
+            <div class="filters" id="filters">
+              <button class="filter-button active" type="button" data-filter="Все">Все</button>
+              <button class="filter-button" type="button" data-filter="Налоги и режимы">Налоги</button>
+              <button class="filter-button" type="button" data-filter="Маркетплейсы">Маркетплейсы</button>
+              <button class="filter-button" type="button" data-filter="115-ФЗ и банки">115-ФЗ</button>
+              <button class="filter-button" type="button" data-filter="Запуск и платежи">Запуск и платежи</button>
+            </div>
+          </section>
+
+          <div class="result-line">
+            <span id="resultCount">Показано 20 из 20</span>
+            <span>Cmd / Ctrl + P · PDF</span>
+          </div>
+
+          <section class="cards" id="cards" aria-live="polite"></section>
+          <div class="empty-state" id="emptyState">
+            Ничего не найдено. Попробуй другое ключевое слово или сбрось фильтр.
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <section class="teleprompter" id="teleprompter" aria-modal="true" role="dialog" aria-label="Режим телесуфлёра">
+      <div class="prompt-controls">
+        <div class="prompt-title">
+          <small>Режим телесуфлёра</small>
+          <strong id="promptTitle"></strong>
+        </div>
+        <label class="speed-control">
+          Скорость
+          <input id="speedRange" type="range" min="8" max="90" value="30" step="1" />
+          <span id="speedValue">30</span>
+        </label>
+        <button class="prompt-button primary" id="playPause" type="button">Старт</button>
+        <button class="prompt-button" id="restartPrompt" type="button">С начала</button>
+        <button class="prompt-close" id="closePrompt" type="button" aria-label="Закрыть телесуфлёр">×</button>
+      </div>
+      <div class="prompt-stage" id="promptStage">
+        <div class="prompt-text" id="promptText"></div>
+      </div>
+    </section>
+
+    <script>
+      const scripts = [
+        {
+          id: 1,
+          blockName: "Налоги и режимы",
+          title: "АУСН: 0 ₽ обязательных взносов",
+          hook: "Как ИП в 2026 и 2027 году абсолютно легально НЕ платить 57 390 рублей обязательных взносов и забыть про новый НДС?",
+          pain: "На обычной упрощенке ты обязан отдать государству почти 60 тысяч рублей в год, даже если твой бизнес сработал в ноль. А сверху еще и лимит без НДС урезали до 20 и 15 миллионов",
+          solution: "Но есть официальный спецрежим налоговой — АУСН. На нем фиксированные взносы ИП равны нулю, деклараций нет вообще, а работать без НДС можно вплоть до 60 миллионов в год! Единственное условие — счет должен быть в уполномоченном банке, например в Т-Банке или Альфе",
+          cta: "Полную таблицу сравнения налогов и прямые ссылки на бесплатное открытие счета под АУСН забирай в моем Telegram-боте — ссылка в шапке профиля!",
+          visualNotes: [
+            "Плашка Взносы ИП: 57 390 ₽ перечеркивается красным крестом под звук удара.",
+            "Скриншот календаря налогов и падающий график лимитов.",
+            "Зеленая табличка: АУСН = 0 ₽ взносов | До 60 млн без НДС. Логотипы Т-Банка и Альфы."
+          ]
+        },
+        {
+          id: 2,
+          blockName: "Налоги и режимы",
+          title: "Лимит без НДС: УСН против АУСН",
+          hook: "Если твой оборот на ИП больше полутора миллионов в месяц — поздравляю, ты попадаешь на НДС",
+          pain: "Раньше на упрощенке можно было спокойно зарабатывать до 60 миллионов в год без НДС. В 2026 году планку уронили до 20 миллионов, а в 2027-м режут до 15 миллионов в год. Это всего 1,25 млн оборота в месяц!",
+          solution: "Как легально остаться без НДС и без дорогого бухгалтера? Перейти на АУСН — автоматизированную упрощенку. Там лимит сохранили на уровне 60 миллионов, а налог автоматически считает сам банк по операциям счета",
+          cta: "Список банков, где подключают АУСН за 0 рублей, и шпаргалку по налогам я выложил в своем Telegram-боте. Переходи по ссылке в описании профиля!",
+          visualNotes: [
+            "Крупный текст НДС НА УСН! + звук полицейской сирены или тревожного колокольчика.",
+            "Калькулятор на экране: 15 000 000 / 12 мес = 1 250 000 ₽/мес.",
+            "Сравнение двух колонок: Обычная УСН (лимит 15-20 млн) vs АУСН (лимит 60 млн)."
+          ]
+        },
+        {
+          id: 3,
+          blockName: "Налоги и режимы",
+          title: "Одна форма, которая спасает от НДС 22%",
+          hook: "Одна забытая бумажка при открытии ИП, из-за которой налоговая заберет 22% со всех твоих доходов",
+          pain: "8 из 10 новичков думают, что при регистрации ИП им автоматически включают упрощенку 6%. Нет! Если ты забыл подать уведомление о переходе на УСН, тебя по умолчанию ставят на общий режим с НДС 22% и кучей отчетов",
+          solution: "Чтобы не попасть на сотни тысяч штрафа и не платить госпошлину, не ходи в налоговую ножками. Оформляй ИП бесплатно через сервис Т-Банка или Альфы — они сами выпустят электронную подпись и приложат заявление на УСН или АУСН автоматически",
+          cta: "Готовую шпаргалку с кодами ОКВЭД и ссылки на бесплатную регистрацию ИП в один клик забирай в моем Telegram-боте в шапке профиля!",
+          visualNotes: [
+            "Крупная красная плашка -22% НДС ПО УМОЛЧАНИЮ.",
+            "Скриншот формы № 26.2-1 с красным штампом ПРОСРОЧЕНО.",
+            "Чек-лист: Пошлина 0 ₽ + ЭЦП 0 ₽ + Авто-заявление на УСН."
+          ]
+        },
+        {
+          id: 4,
+          blockName: "Налоги и режимы",
+          title: "УСН 6% или АУСН 8%: расчёт",
+          hook: "Почему все говорят, что АУСН 8% невыгодна по сравнению с обычной УСН 6%? Давай посчитаем на калькуляторе за 20 секунд",
+          pain: "Допустим, твой годовой оборот — 25 миллионов рублей. На обычной УСН 6% ты слетаешь с лимита и платишь 6% налога ПЛЮС 5% НДС, плюс взносы и минимум 60 тысяч в год бухгалтеру за декларации по НДС. Итого — почти 3 миллиона рублей!",
+          solution: "А теперь берем АУСН 8% в уполномоченном банке при том же обороте 25 миллионов: НДС — ноль, страховые взносы — ноль, бухгалтер — ноль. Ты экономишь больше 800 тысяч рублей чистой прибыли в год!",
+          cta: "Хочешь бесплатно подобрать идеальный налоговый режим и банк под свой оборот? Запускай моего Telegram-бота по ссылке в шапке профиля!",
+          visualNotes: [
+            "Две плашки на экране: УСН 6% vs АУСН 8%.",
+            "Быстрый подсчет цифр в столбик с красным итогом ~2.8 млн ₽.",
+            "Зеленая плашка Экономия: +800 000 ₽/год."
+          ]
+        },
+        {
+          id: 5,
+          blockName: "Налоги и режимы",
+          title: "Патент: новые лимиты и маркетплейсы",
+          hook: "Если ты работаешь на Патенте — проверь свои цифры прямо сейчас, иначе пересчитают налоги задним числом",
+          pain: "Во-первых, лимит доходов по Патенту жестко урезали вслед за УСН — с 60 миллионов до 20, а затем и до 15 миллионов в год. Как только превысишь — слетаешь с патента. А во-вторых, на патенте категорически запрещено торговать на маркетплейсах Wildberries и Ozon",
+          solution: "Для розницы и кофеен с небольшим оборотом патент еще живет, но обязательно открывай под него счет с совмещением УСН — на случай, если выручка скакнет выше лимита",
+          cta: "Всю таблицу лимитов по УСН, Патенту и АУСН я упаковал в бесплатный PDF-гайд. Скачивай его за 5 секунд в моем Telegram-боте в шапке профиля!",
+          visualNotes: [
+            "Плашка ПАТЕНТ (ПСН) — ВСЁ?",
+            "Перечеркнутые иконки WB и Ozon рядом со словом «Патент».",
+            "Схема: Патент + Подстраховка УСН/АУСН."
+          ]
+        },
+        {
+          id: 6,
+          blockName: "Маркетплейсы",
+          title: "ОКВЭД для селлера: одного кода мало",
+          hook: "Выходишь на Wildberries или Ozon? Если при открытии ИП ты указал только код 47.91 — жди вопросов от налоговой",
+          pain: "Да, 47.91 — это основной код интернет-торговли. Но когда маркетплейс начисляет тебе баллы за скидки или компенсации за маркетинг, в закрывающих документах это часто проходит как рекламные или информационные услуги!",
+          solution: "Если у тебя нет дополнительного кода 73.11 (рекламная деятельность), налоговая может посчитать эту выплату доходом не по профилю. Поэтому на старте всегда добавляй связку из 6 кодов: интернет-торговля, хранение, упаковка и реклама",
+          cta: "Готовую сборку всех кодов ОКВЭД для селлеров и бесплатную регистрацию ИП за 0 рублей забирай в моем Telegram-боте по ссылке в профиле!",
+          visualNotes: [
+            "Логотипы WB/Ozon и код 47.91 с красным знаком вопроса.",
+            "Скриншот отчета селлера с выделенной строкой «Услуги продвижения / Премии».",
+            "Вылетающий список: 47.91 + 47.99 + 52.10 + 82.92 + 73.11."
+          ]
+        },
+        {
+          id: 7,
+          blockName: "Маркетплейсы",
+          title: "С какой суммы селлер платит налог",
+          hook: "Главная налоговая ловушка селлеров на Wildberries и Ozon, которая сжирает всю чистую прибыль",
+          pain: "Новички думают: продал куртку за 5 000 рублей, маркетплейс забрал 2 000 комиссии и логистики, мне на счет пришло 3 000 — с трех тысяч я и заплачу 6% налога. Нифига! Налог 6% ты обязан заплатить со всех 5 000 рублей, по которым товар купил клиент!",
+          solution: "Поэтому если ты покупаешь товар официально с накладными, а расходы и комиссия маркетплейса съедают больше 65% оборота — считай переход на \"Доходы минус расходы\" 15% или открывай счет в банке со встроенной бухгалтерией для селлеров, которая сама считает налог по API маркетплейса",
+          cta: "Шпаргалку по выбору налога для маркетплейсов и спецтарифы банков для селлеров забирай в моем Telegram-боте в шапке профиля!",
+          visualNotes: [
+            "Плашка УСН 6% vs УСН 15% НА МАРКЕТПЛЕЙСАХ.",
+            "Наглядная схема: Цена на сайте: 5 000 ₽ → На حساب пришло: 3 000 ₽ → Налог 6% берут с 5 000 ₽!.",
+            "Иконки Т-Банка, Альфы и Ozon Банка с подписью Интеграция с WB/Ozon по API."
+          ]
+        },
+        {
+          id: 8,
+          blockName: "Маркетплейсы",
+          title: "Как селлер попадает под 115-ФЗ",
+          hook: "Тебе пришла выплата с Wildberries на 500 тысяч, ты перевел её себе на карту — и банк заблокировал счет. Знакомо?",
+          pain: "Почему так происходит? Когда селлер закупает товар за наличку на рынке без документов, получает выручку от маркетплейса и в тот же день выводит 100% денег себе на физлицо — робот банка видит классическую схему обнала",
+          solution: "Во-первых, плати со счета ИП хотя бы за фулфилмент, упаковку, рекламу и налоги. А во-вторых — открывай счет в банках, которые понимают специфику маркетплейсов (Т-Банк, Ozon Банк и Альфа), и всегда держи второй резервный счет за 0 рублей",
+          cta: "В моем Telegram-боте лежит чек-лист из 5 правил защиты от 115-ФЗ и ссылки на бесплатные счета для селлеров. Переходи по ссылке в профиле!",
+          visualNotes: [
+            "Красный экран СЧЕТ ЗАБЛОКИРОВАН ПО 115-ФЗ.",
+            "Схема: Нет оплаты поставщикам по безналу + 100% вывод на карту = Блок.",
+            "Плашка Т-Банк + Ozon Банк / Альфа = Безопасная работа селлера."
+          ]
+        },
+        {
+          id: 9,
+          blockName: "Маркетплейсы",
+          title: "ОКВЭД для пункта выдачи",
+          hook: "Открываешь пункт выдачи Wildberries или Ozon? Не вздумай ставить основным кодом ОКВЭД розничную торговлю!",
+          pain: "Владелец ПВЗ сам ничего не продает в интернете — он оказывает логистические, складские и курьерские услуги маркетплейсу. Если указать неправильный основной код, можно потерять льготные региональные ставки по УСН",
+          solution: "Для открытия ПВЗ твоим основным кодом должен быть 52.29 — вспомогательная деятельность, связанная с перевозками, а дополнительными — 53.20 (курьерская деятельность) и 52.10 (складирование и хранение)",
+          cta: "Чтобы не переписывать коды с экрана, скачай готовую PDF-шпаргалку по ОКВЭД и оформи ИП под ПВЗ за 0 рублей в моем Telegram-боте — ссылка в шапке профиля!",
+          visualNotes: [
+            "Фото ПВЗ Ozon/WB и перечеркнутый код 47.91.",
+            "Текст на экране: ПВЗ ≠ Интернет-магазин.",
+            "Четкая плашка с кодами: Основной: 52.29 | Доп: 53.20, 52.10, 47.91."
+          ]
+        },
+        {
+          id: 10,
+          blockName: "Маркетплейсы",
+          title: "Самозанятый на маркетплейсе",
+          hook: "Хочешь зайти на Wildberries или Ozon как самозанятый, чтобы не открывать ИП? Это билет на штраф и блокировку",
+          pain: "По закону самозанятый имеет право продавать ТОЛЬКО товары собственного производства — то, что ты сшил или слепил своими руками. Если ты купил партию сумок или электроники оптом и выставил как самозанятый — при первой же жалобе конкурента налоговая снимет статус НПД и доначислит налоги",
+          solution: "Тем более открывать ИП в 2026 году проще, чем заказать пиццу: через онлайн-сервис банка это стоит 0 рублей, без госпошлины, без похода в налоговую, а на режиме АУСН у ИП даже нет обязательных страховых взносов!",
+          cta: "Переходи в моего Telegram-бота по ссылке в шапке профиля — там мы бесплатно подберем коды ОКВЭД и откроем ИП за 10 минут без единой копейки!",
+          visualNotes: [
+            "Штамп ЗАПРЕЩЕНО ЗАКОНОМ № 422-ФЗ.",
+            "Сравнение: Сделал сам = Можно НПД ✅ vs Перепродажа = Только ИП ⚠️.",
+            "Плашка Регистрация ИП онлайн = 0 ₽."
+          ]
+        },
+        {
+          id: 11,
+          blockName: "115-ФЗ и банки",
+          title: "Назначение платежа без блокировки",
+          hook: "Напишешь эти три слова в назначении платежа — и робот банка заморозит твой расчетный счет",
+          pain: "Предприниматели из лени часто пишут в платежке просто: \"Оплата по счету №5\" или \"За услуги по договору\". Для банковского финмониторинга пустое назначение без конкретики — это первый признак фиктивной операции",
+          solution: "Всегда пиши развернуто по формуле: за что именно платишь (конкретный товар или услуга), номер и дата договора или УПД, и обязательно указывай статус НДС (\"Без НДС\" или \"В т.ч. НДС\"). Это занимает 10 секунд, но спасает от блокировки",
+          cta: "Все 5 правил защиты от 115-ФЗ и список самых лояльных банков со встроенным светофором рисков забирай в моем Telegram-боте по ссылке в шапке профиля!",
+          visualNotes: [
+            "Поле «Назначение платежа» с мигающим красным курсором.",
+            "Красный крест на фразе «Оплата по договору №5» ❌.",
+            "Зеленый пример правильного назначения платежа."
+          ]
+        },
+        {
+          id: 12,
+          blockName: "115-ФЗ и банки",
+          title: "Почему нельзя сразу выводить выручку",
+          hook: "Никогда не выводи и не снимай деньги со счета ИП в тот же день, когда они тебе поступили",
+          pain: "Представь глазами алгоритма банка: на счет падает 400 тысяч от заказчика, и через 15 минут ты переводишь их все на физлицо или снимаешь в банкомате. На счете остается ноль. Робот мгновенно вешает метку \"транзитный обнал\" и блокирует дистанционный банк-клиент",
+          solution: "Как делать правильно? Давай деньгам \"отлежаться\" хотя бы пару дней, оплачивай бизнес-картой обычные покупки (топливо, кафе, сервисы, закупки) и выводи чистую прибыль частями в рамках бесплатных лимитов банка",
+          cta: "В моем Telegram-боте по ссылке в профиле лежит бесплатная шпаргалка по 115-ФЗ и подборка банков с максимальными лимитами вывода на карту!",
+          visualNotes: [
+            "Банкомат и красная надпись ТРАНЗИТНАЯ ОПЕРАЦИЯ.",
+            "График баланса счета: 0 ₽ → +400 000 ₽ → 0 ₽ (Блок!).",
+            "Картинка бизнес-карты Т-Банка / Альфы с зеленой галочкой."
+          ]
+        },
+        {
+          id: 13,
+          blockName: "115-ФЗ и банки",
+          title: "Зачем бизнесу второй расчётный счёт",
+          hook: "Представь: завтра утром тебе нужно платить за аренду или закупку товара, ты заходишь в приложение банка, а счет заморожен",
+          pain: "Даже если ты работаешь кристально белыми деньгами, банк по закону обязан периодически запрашивать договоры и накладные на проверку. Проверка длится от 5 до 10 рабочих дней. Если у тебя всего один счет — твой бизнес на две недели просто умирает",
+          solution: "Поэтому золотое правило любого опытного предпринимателя — всегда иметь ДВА расчетных счета в разных банках. Открытие и обслуживание резервного счета в Альфа-Банке или ВТБ стоит 0 рублей навсегда: лежит себе, есть не просит, но в критический момент спасет бизнес",
+          cta: "Открыть бесплатный резервный счет онлайн за 5 минут и забрать гид по безопасности счета можно в моем Telegram-боте — ссылка в шапке профиля!",
+          visualNotes: [
+            "Замок поверх экрана мобильного банка.",
+            "Календарь, где зачеркнуты 10 дней подряд.",
+            "Плашка Основной счет + Резервный счет (0 ₽/мес) = 100% защита."
+          ]
+        },
+        {
+          id: 14,
+          blockName: "115-ФЗ и банки",
+          title: "Налоговая нагрузка по каждому счёту",
+          hook: "Секретная цифра банковского светофора: если платишь налогов меньше этого процента — жди блокировку счета",
+          pain: "Частая ошибка: у ИП открыто два счета. По первому счету проходит оборот 5 миллионов, а налоги и взносы он платит со второго счета или вообще с личной карты. В итоге первый банк видит оборот 5 миллионов и 0 рублей налогов — и блокирует счет!",
+          solution: "Запомни рекомендации ЦБ: налоговая нагрузка по КАЖДОМУ твоему активному счету должна быть минимум 0,9%–1% от оборота. Прогнал миллион через этот банк — заплати налог именно с этого расчетного счета",
+          cta: "Еще больше практических правил по работе со счетами и налогами 2026–2027 я собрал в PDF-шпаргалке в своем Telegram-боте. Ссылка в описании профиля!",
+          visualNotes: [
+            "Индикатор светофора (Зеленый → Желтый → Красный).",
+            "Два банка на экране: Банк 1: Оборот 5 млн (Налоги 0 ₽) ❌.",
+            "Формула на экране: Налоги со счета ≥ 1% от оборота ✅."
+          ]
+        },
+        {
+          id: 15,
+          blockName: "115-ФЗ и банки",
+          title: "Как выводить деньги ИП без комиссии",
+          hook: "Как ИП переводить деньги с расчетного счета на свою личную карту и не отдавать банку по 2–3% комиссии?",
+          pain: "В отличие от ООО, индивидуальный предприниматель имеет полное право свободно переводить заработанные деньги себе на личную карту на любые цели. Но многие старые банки режут бесплатный лимит до 100–150 тысяч рублей, а дальше включают конский процент",
+          solution: "Секрет простой: во-первых, открывай счет в банках с высокими бесплатными лимитами на вывод физлицу (например, в Т-Банке на карту Т-Black или на спецтарифах Альфы и ОТП). А во-вторых — используй сразу 2 счета в разных банках, чтобы удвоить свой бесплатный месячный лимит!",
+          cta: "Подобрать банк с лучшими лимитами вывода под твой оборот можно за 30 секунд в моем Telegram-боте — переходи по ссылке в шапке профиля!",
+          visualNotes: [
+            "Перевод со счета ИП на карту физлица с надписью Комиссия 0 ₽.",
+            "Тарифная сетка с комиссией 1.5% – 3% за перевод себе.",
+            "Математическая плашка: Лимит Банка 1 + Лимит Банка 2 = х2 бесплатного вывода."
+          ]
+        },
+        {
+          id: 16,
+          blockName: "Запуск и платежи",
+          title: "Регистрация ИП без юриста и пошлины",
+          hook: "Если юрист просит с тебя 5 000 рублей за открытие ИП или ООО — беги от него, тебя разводят",
+          pain: "Юридические конторы до сих пор берут деньги за заполнение стандартного заявления Р21001 и отправляют тебя платить госпошлину 800 рублей за ИП или 4 000 за ООО, да еще и к нотариусу за свой счет",
+          solution: "При подаче документов в налоговую электронно госпошлина по закону равна нулю! А банки вроде Т-Банка и Альфы сами бесплатно подготовят все документы, выпустят тебе электронную подпись и зарегистрируют бизнес онлайн за 0 рублей, потому что им выгодно, чтобы ты открыл у них бесплатный счет",
+          cta: "Не переплачивай посредникам — переходи в моего Telegram-бота в шапке профиля, забирай шпаргалку по ОКВЭД и регистрируй бизнес бесплатно!",
+          visualNotes: [
+            "Купюра 5 000 рублей перечеркивается красным.",
+            "Чек расходов: Юрист 5 000 ₽ + Пошлина 4 000 ₽ + Нотариус 2 000 ₽ = 11 000 ₽ на ветер.",
+            "Зеленая плашка Регистрация + ЭЦП + УСН = 0 ₽ через банк."
+          ]
+        },
+        {
+          id: 17,
+          blockName: "Запуск и платежи",
+          title: "Эквайринг 2,5% против СБП",
+          hook: "Владельцы магазинов, кофеен и онлайн-сервисов дарят банкам по 200 тысяч рублей в год просто из-за лени",
+          pain: "Посмотри свою ставку по торговому или интернет-эквайрингу. Если ты платишь по старинке 2,2%–2,5% с каждой оплаты картой, то при обороте в 1 миллион в месяц банк забирает у тебя 25 тысяч рублей — это стоимость аренды или зарплаты сотрудника!",
+          solution: "Как урезать расходы в 4 раза за один день? Подключай прием оплат по СБП и QR-коду (или NFC-табличке) в Т-Банке, Альфе или ВТБ. Комиссия по СБП для большинства ниш — всего 0,4% или 0,7%, а деньги падают на счет за одну секунду!",
+          cta: "Подобрать банк с бесплатным терминалом и минимальной ставкой эквайринга можно за минуту в моем Telegram-боте — ссылка в описании профиля!",
+          visualNotes: [
+            "Платежный терминал и счетчик убытков -200 000 ₽.",
+            "Расчет: 1 000 000 ₽ × 2.5% = 25 000 ₽ в месяц (300 000 ₽ в год).",
+            "Сравнение: Эквайринг 2.5% vs СБП 0.4%–0.7% (Экономия 200 000 ₽/год)."
+          ]
+        },
+        {
+          id: 18,
+          blockName: "Запуск и платежи",
+          title: "Банки для старта с тарифом 0 ₽",
+          hook: "Какой банк выбрать для ИП на старте, чтобы с тебя не списывали по 2 000 рублей в месяц, пока нет выручки?",
+          pain: "На старте бизнеса или в несезон выручки может не быть месяц или два. Обидно, когда на счете ноль, а банк загоняет тебя в минус за абонентскую плату и СМС-информирование",
+          solution: "Вот идеальная связка на 2026–2027 год: первый счет — Т-Банк (максимально удобное приложение, первые месяцы 0 рублей и поддержка в чате за минуту). Второй счет — тариф \"Ноль за обслуживание\" в Альфа-Банке или стартовый тариф в ВТБ/Ozon Банке, где ведение счета стоит 0 рублей всегда, если нет оборотов",
+          cta: "Сравнить условия всех трех банков и подать заявку по акционным ссылкам можно прямо сейчас в моем Telegram-боте в шапке профиля!",
+          visualNotes: [
+            "Плашка ТОП-3 БАНКА С ТАРИФОМ 0 ₽.",
+            "Уведомление Списание за обслуживание счета: -1 990 ₽.",
+            "Карточки трех банков: 1. Т-Банк | 2. Альфа-Банк (0 ₽) | 3. ВТБ / Ozon (0 ₽)."
+          ]
+        },
+        {
+          id: 19,
+          blockName: "Запуск и платежи",
+          title: "Когда онлайн-касса не нужна",
+          hook: "Покупать онлайн-кассу за 40 тысяч рублей в первый же день работы ИП нужно далеко не всем. Проверь, можешь ли ты работать без нее!",
+          pain: "Штраф за работу без кассы по 54-ФЗ огромный, поэтому продавцы касс пугают каждого новичка и впаривают коробку с фискальным накопителем даже тем, кому она по закону вообще не нужна",
+          solution: "Запомни 3 случая, когда касса НЕ нужна: первое — ты работаешь только с юрлицами и другими ИП по безналу на расчетный счет. Второе — ты продаешь товары только через маркетплейсы (WB и Ozon сами бьют чеки покупателям). Третье — ты ИП на Патенте по ряду бытовых и ремонтных услуг из списка статьи 2 закона 54-ФЗ",
+          cta: "А если тебе всё-таки нужна касса или интернет-эквайринг для сайта за 0 рублей в аренду — переходи в моего Telegram-бота в шапке профиля, подберем лучший вариант!",
+          visualNotes: [
+            "Кассовый аппарат с ценником 40 000 ₽ и знак вопроса.",
+            "Текст: Кому касса НЕ нужна по 54-ФЗ?",
+            "Три зеленых пункта на экране: 1. B2B по счету | 2. Маркетплейсы | 3. Спецсписок ПСН."
+          ]
+        },
+        {
+          id: 20,
+          blockName: "Запуск и платежи",
+          title: "ИП или ООО: миф об ответственности",
+          hook: "\"Не открывай ИП, отберут квартиру за долги, открывай ООО!\" — это самый вредный миф из двухтысячных годов",
+          pain: "Новички боятся ответственности ИП и открывают для простого магазина или услуг ООО. А потом впадают в ступор: деньги со счета ООО нельзя просто так перевести себе на карту — нужно платить НДФЛ 13% с дивидендов, вести бухучет, а по долгам ООО директора и учредителя сегодня точно так же привлекают к субсидиарной ответственности личным имуществом!",
+          solution: "Если ты начинаешь один, без партнеров и инвесторов — в 95% случаев открывай ИП. Все деньги на расчетном счете ИП после уплаты налога — уже твои личные, штрафы для ИП в 10 раз меньше, чем для ООО, а открыть и закрыть его можно онлайн за 0 рублей",
+          cta: "Готовую шпаргалку по открытию ИП, выбору ОКВЭД и налогов 2026–2027 забирай бесплатно в моем Telegram-боте по ссылке в шапке профиля!",
+          visualNotes: [
+            "Плашка ИП vs ООО: МИФ ПРО ОТВЕТСТВЕННОСТЬ.",
+            "Сравнение: ООО: Вывод денег под 13% + Сложный учет + Субсидиарка.",
+            "Зеленая карточка ИП: Свободный вывод денег + Штрафы в 10 раз ниже + Регистрация 0 ₽."
+          ]
+        }
+      ];
+
+      const STORAGE_KEY = "opt-scripts-dashboard-v1";
+      const cards = document.getElementById("cards");
+      const searchInput = document.getElementById("searchInput");
+      const resultCount = document.getElementById("resultCount");
+      const topCount = document.getElementById("topCount");
+      const emptyState = document.getElementById("emptyState");
+      const progressValue = document.getElementById("progressValue");
+      const progressFill = document.getElementById("progressFill");
+      const shotCount = document.getElementById("shotCount");
+      const editedCount = document.getElementById("editedCount");
+      const teleprompter = document.getElementById("teleprompter");
+      const promptTitle = document.getElementById("promptTitle");
+      const promptText = document.getElementById("promptText");
+      const promptStage = document.getElementById("promptStage");
+      const playPause = document.getElementById("playPause");
+      const speedRange = document.getElementById("speedRange");
+      const speedValue = document.getElementById("speedValue");
+      const sidebar = document.getElementById("sidebar");
+      const mobileOverlay = document.getElementById("mobileOverlay");
+
+      let activeFilter = "Все";
+      const statuses = loadStatuses();
+      let promptRunning = false;
+      let animationFrame = 0;
+      let lastFrame = 0;
+
+      function loadStatuses() {
+        try {
+          const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+          return saved && typeof saved === "object" ? saved : {};
+        } catch {
+          return {};
+        }
+      }
+
+      function saveStatuses() {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(statuses));
+        } catch {
+          // Страница остаётся рабочей даже при отключённом localStorage.
+        }
+      }
+
+      function escapeHtml(value) {
+        return String(value)
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#039;");
+      }
+
+      function searchableText(script) {
+        return [
+          script.blockName,
+          script.title,
+          script.hook,
+          script.pain,
+          script.solution,
+          script.cta,
+          ...script.visualNotes
+        ]
+          .join(" ")
+          .toLocaleLowerCase("ru");
+      }
+
+      function segment(className, time, label, text) {
+        return `
+          <div class="segment segment-${className}">
+            <div class="segment-label">[${time}] ${label}</div>
+            <p>${escapeHtml(text)}</p>
+          </div>
+        `;
+      }
+
+      function cardTemplate(script, isVisible) {
+        const state = statuses[script.id] || {};
+        const notes = script.visualNotes
+          .map((note) => `<li>${escapeHtml(note)}</li>`)
+          .join("");
+        return `
+          <article class="script-card ${state.edited ? "is-complete" : ""}" data-script-id="${script.id}" ${isVisible ? "" : "hidden"}>
+            <header class="card-head">
+              <span class="script-number">${String(script.id).padStart(2, "0")}</span>
+              <div class="card-title-wrap">
+                <span class="block-tag">${escapeHtml(script.blockName)}</span>
+                <h2 class="card-title">${escapeHtml(script.title)}</h2>
+              </div>
+              <div class="card-actions">
+                <label class="status-check">
+                  <input type="checkbox" data-status="shot" ${state.shot ? "checked" : ""} />
+                  Отснято
+                </label>
+                <label class="status-check">
+                  <input type="checkbox" data-status="edited" ${state.edited ? "checked" : ""} />
+                  Смонтировано
+                </label>
+                <button class="teleprompter-button" type="button" data-teleprompter="${script.id}">
+                  <span class="play-icon">▶</span> Режим телесуфлёра
+                </button>
+              </div>
+            </header>
+            <div class="script-segments">
+              ${segment("hook", "0:00–0:04", "Хук", script.hook)}
+              ${segment("pain", "0:04–0:15", "Боль", script.pain)}
+              ${segment("solution", "0:15–0:25", "Решение", script.solution)}
+              ${segment("cta", "0:25–0:32", "CTA", script.cta)}
+            </div>
+            <div class="visual-notes">
+              <h3>Подсказки для монтажа <span>B-roll / плашки</span></h3>
+              <ul>${notes}</ul>
+            </div>
+          </article>
+        `;
+      }
+
+      function renderCards() {
+        const query = searchInput.value.trim().toLocaleLowerCase("ru");
+        let visibleCount = 0;
+        cards.innerHTML = scripts
+          .map((script) => {
+            const filterMatches = activeFilter === "Все" || script.blockName === activeFilter;
+            const searchMatches = !query || searchableText(script).includes(query);
+            const visible = filterMatches && searchMatches;
+            if (visible) visibleCount += 1;
+            return cardTemplate(script, visible);
+          })
+          .join("");
+
+        resultCount.textContent = `Показано ${visibleCount} из ${scripts.length}`;
+        topCount.textContent = `${visibleCount} ${visibleCount === 1 ? "сценарий" : "сценариев"}`;
+        emptyState.classList.toggle("visible", visibleCount === 0);
+
+        cards.querySelectorAll("[data-status]").forEach((input) => {
+          input.addEventListener("change", handleStatusChange);
+        });
+        cards.querySelectorAll("[data-teleprompter]").forEach((button) => {
+          button.addEventListener("click", () => openTeleprompter(Number(button.dataset.teleprompter)));
+        });
+      }
+
+      function handleStatusChange(event) {
+        const input = event.currentTarget;
+        const card = input.closest(".script-card");
+        const id = Number(card.dataset.scriptId);
+        statuses[id] = { ...(statuses[id] || {}), [input.dataset.status]: input.checked };
+        card.classList.toggle("is-complete", Boolean(statuses[id].edited));
+        saveStatuses();
+        updateProgress();
+      }
+
+      function updateProgress() {
+        const shot = scripts.filter((script) => statuses[script.id]?.shot).length;
+        const edited = scripts.filter((script) => statuses[script.id]?.edited).length;
+        progressValue.textContent = `${edited} / ${scripts.length}`;
+        progressFill.style.width = `${(edited / scripts.length) * 100}%`;
+        shotCount.textContent = shot;
+        editedCount.textContent = edited;
+      }
+
+      function setFilter(filter) {
+        activeFilter = filter;
+        document.querySelectorAll(".filter-button").forEach((button) => {
+          button.classList.toggle("active", button.dataset.filter === filter);
+        });
+        renderCards();
+      }
+
+      function openTeleprompter(id) {
+        const script = scripts.find((item) => item.id === id);
+        if (!script) return;
+        pausePrompt();
+        promptTitle.textContent = `№${String(script.id).padStart(2, "0")} · ${script.title}`;
+        promptText.innerHTML = [script.hook, script.pain, script.solution, script.cta]
+          .map((text) => `<p>${escapeHtml(text)}</p>`)
+          .join("");
+        promptStage.scrollTop = 0;
+        teleprompter.classList.add("open");
+        document.body.style.overflow = "hidden";
+        document.getElementById("playPause").focus();
+      }
+
+      function closeTeleprompter() {
+        pausePrompt();
+        teleprompter.classList.remove("open");
+        document.body.style.overflow = "";
+      }
+
+      function promptStep(timestamp) {
+        if (!promptRunning) return;
+        if (!lastFrame) lastFrame = timestamp;
+        const delta = Math.min(timestamp - lastFrame, 64);
+        lastFrame = timestamp;
+        promptStage.scrollTop += (Number(speedRange.value) * delta) / 1000;
+        const reachedEnd =
+          promptStage.scrollTop + promptStage.clientHeight >= promptStage.scrollHeight - 2;
+        if (reachedEnd) {
+          pausePrompt();
+          return;
+        }
+        animationFrame = requestAnimationFrame(promptStep);
+      }
+
+      function startPrompt() {
+        if (promptRunning) return;
+        promptRunning = true;
+        lastFrame = 0;
+        playPause.textContent = "Пауза";
+        animationFrame = requestAnimationFrame(promptStep);
+      }
+
+      function pausePrompt() {
+        promptRunning = false;
+        lastFrame = 0;
+        playPause.textContent = "Старт";
+        cancelAnimationFrame(animationFrame);
+      }
+
+      function togglePrompt() {
+        promptRunning ? pausePrompt() : startPrompt();
+      }
+
+      function closeMobileMenu() {
+        sidebar.classList.remove("open");
+        mobileOverlay.classList.remove("open");
+      }
+
+      document.getElementById("filters").addEventListener("click", (event) => {
+        const button = event.target.closest("[data-filter]");
+        if (button) setFilter(button.dataset.filter);
+      });
+      searchInput.addEventListener("input", renderCards);
+      playPause.addEventListener("click", togglePrompt);
+      document.getElementById("restartPrompt").addEventListener("click", () => {
+        pausePrompt();
+        promptStage.scrollTop = 0;
+      });
+      document.getElementById("closePrompt").addEventListener("click", closeTeleprompter);
+      speedRange.addEventListener("input", () => {
+        speedValue.textContent = speedRange.value;
+      });
+      document.getElementById("mobileMenu").addEventListener("click", () => {
+        sidebar.classList.add("open");
+        mobileOverlay.classList.add("open");
+      });
+      mobileOverlay.addEventListener("click", closeMobileMenu);
+      document.addEventListener("keydown", (event) => {
+        if (!teleprompter.classList.contains("open")) return;
+        if (event.key === "Escape") closeTeleprompter();
+        if (event.code === "Space" && event.target.tagName !== "INPUT") {
+          event.preventDefault();
+          togglePrompt();
+        }
+      });
+
+      renderCards();
+      updateProgress();
+    </script>
+  </body>
+</html>

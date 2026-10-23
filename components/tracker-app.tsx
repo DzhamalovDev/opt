@@ -13,6 +13,7 @@ import {
   CheckCircle2,
   ChevronRight,
   Circle,
+  Clapperboard,
   Clock3,
   Download,
   FileUp,
@@ -474,6 +475,11 @@ export default function TrackerApp() {
             <span>Мои заметки</span>
             <ChevronRight size={15} className="nav-arrow" />
           </button>
+          <a className="nav-link" href="/scripts_dashboard.html">
+            <Clapperboard size={18} />
+            <span>Сценарии</span>
+            <ChevronRight size={15} className="nav-arrow" />
+          </a>
           <div className="nav-group-label">
             90 ДНЕЙ{" "}
             <span>

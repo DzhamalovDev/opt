@@ -129,6 +129,7 @@ select:focus-visible {
   border-radius: 0;
   color: #c4c9d1;
   font-weight: 700;
+  text-decoration: none;
 }
 .nav-link:hover,
 .week-link:hover {
